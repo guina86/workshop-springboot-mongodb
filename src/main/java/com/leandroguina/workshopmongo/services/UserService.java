@@ -1,7 +1,7 @@
 package com.leandroguina.workshopmongo.services;
 
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,13 +22,9 @@ public class UserService {
 	}
 
 	public User findById(String id) {
-
-		try {
-			User user = repo.findById(id).get();
-			return user;
-		} catch (NoSuchElementException e) {
-			throw new ObjectNotFoundException("Object not found");
-		}
+			Optional<User> obj = repo.findById(id);
+			return obj.orElseThrow(() -> new ObjectNotFoundException("Object not found"));
+		
 	}
 
 	public User insert(User obj) {
@@ -41,7 +37,7 @@ public class UserService {
 	}
 	
 	public User update(User obj) {
-		User newObj = repo.findById(obj.getId()).get();
+		User newObj = findById(obj.getId());
 		updateData(newObj, obj);
 		return repo.save(newObj);
 	}
